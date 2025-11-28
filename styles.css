@@ -16,10 +16,10 @@ body {
 .app {
   max-width: 480px;
   margin: 0 auto;
-  min-height: 100vh; /* allow page to scroll on small screens */
-  padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+  padding: 12px;
   display: flex;
   flex-direction: column;
+  height: auto;
 }
 
 /* Top bar */
@@ -47,10 +47,12 @@ body {
 
 /* Main image + answer area */
 .main-area {
-  flex: 1 0 auto;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .image-wrapper {
@@ -241,4 +243,14 @@ body {
   margin-top: 8px;
   font-size: 0.7rem;
   color: #666;
+}
+html, body {
+  height: auto !important;
+  min-height: 100%;
+}
+
+@supports (-webkit-touch-callout: none) {
+  body {
+    height: auto !important;
+  }
 }
