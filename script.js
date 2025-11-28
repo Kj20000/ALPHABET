@@ -231,40 +231,58 @@ function deleteWord(id) {
 function handleAddWord() {
   const category = (categoryInput.value || "GENERAL").trim().toUpperCase();
   const word = (wordInput.value || "").trim().toUpperCase();
+  const file = imageInput.files[0];
+  const url = imageURL.value.trim();
 
-  if (!word || !imageInput.files[0]) {
-    alert("Please enter a WORD and choose an IMAGE.");
+  if (!word) {
+    alert("Please enter a word.");
     return;
   }
 
-  const file = imageInput.files[0];
-  const reader = new FileReader();
-  reader.onload = e => {
-    const imageData = e.target.result;
+  // CASE 1 — FILE UPLOAD
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = e => saveNewWord(word, category, e.target.result);
+    reader.readAsDataURL(file);
+    return;
+  }
 
-    const newWord = {
-      id: Date.now(),
-      word,
-      category,
-      imageData
-    };
+  // CASE 2 — URL UPLOAD
+  if (url !== "") {
+    fetch(url)
+      .then(r => r.blob())
+      .then(blob => {
+        const fr = new FileReader();
+        fr.onload = e => saveNewWord(word, category, e.target.result);
+        fr.readAsDataURL(blob);
+      })
+      .catch(() => alert("Invalid image URL"));
+    return;
+  }
 
-    words.push(newWord);
-    saveWordsToStorage();
-    refreshWordList();
-    refreshCategoryFilter();
-
-    // Clear inputs
-    wordInput.value = "";
-    imageInput.value = "";
-
-    // if it was the first word, start game
-    if (!currentWord) {
-      pickRandomWord();
-      setupWordDisplay();
-    }
+  alert("Please upload an image file or paste an image URL.");
+}
+function saveNewWord(word, category, base64) {
+  const newWord = {
+    id: Date.now(),
+    word,
+    category,
+    imageData: base64
   };
-  reader.readAsDataURL(file);
+
+  words.push(newWord);
+  saveWordsToStorage();
+  refreshWordList();
+  refreshCategoryFilter();
+
+  wordInput.value = "";
+  imageInput.value = "";
+  imageURL.value = "";
+
+  if (!currentWord) {
+    pickRandomWord();
+    setupWordDisplay();
+  }
 }
 
 // ====== EVENT LISTENERS ======
@@ -294,3 +312,4 @@ refreshWordList();
 refreshCategoryFilter();
 pickRandomWord();
 setupWordDisplay();
+
