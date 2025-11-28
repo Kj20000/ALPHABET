@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>What word is this?</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+
+    <header class="top-bar">
+      <h1 class="title">What word is this?</h1>
+      <button id="settingsButton" class="icon-button" aria-label="Settings">⚙️</button>
+    </header>
+
+    <main class="main-area">
+      <div class="image-wrapper">
+        <img id="wordImage" alt="Word" />
+        <p id="noWordsMessage" class="info-text">
+          No words yet. Tap the ⚙️ button to add your own picture words.
+        </p>
+      </div>
+
+      <div class="answer-wrapper">
+        <div id="answerSlots" class="answer-slots"></div>
+        <div id="hintLetter" class="hint-letter"></div>
+      </div>
+
+      <p id="message" class="message"></p>
+    </main>
+
+    <section id="keyboard" class="keyboard" aria-label="Letters keyboard">
+      <!-- JS fills A–Z buttons -->
+    </section>
+
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div id="settingsModal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <header class="modal-header">
+        <h2>Custom Words</h2>
+        <button id="closeSettings" class="icon-button" aria-label="Close">✖️</button>
+      </header>
+
+      <div class="modal-body">
+        <label class="field">
+          <span>Category (e.g. ANIMALS, FRUITS)</span>
+          <input type="text" id="categoryInput" placeholder="ANIMALS" />
+        </label>
+
+        <label class="field">
+          <span>WORD (CAPITAL LETTERS)</span>
+          <input type="text" id="wordInput" placeholder="LION" />
+        </label>
+
+        <label class="field">
+          <span>Image</span>
+          <input type="file" id="imageInput" accept="image/*" />
+        </label>
+
+        <button id="addWordButton" class="primary-button">Save Word</button>
+
+        <hr />
+
+        <label class="field">
+          <span>Play from Category</span>
+          <select id="categoryFilter">
+            <option value="ALL">ALL</option>
+          </select>
+        </label>
+
+        <div id="wordList" class="word-list">
+          <!-- list of saved words -->
+        </div>
+
+        <p class="tiny-note">
+          Note: Words are saved on this device (offline). To see them on other
+          devices later, you’d need a small online sync service.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
