@@ -10,7 +10,7 @@ const GITHUB_BRANCH = "main";                     // or "master"
 
 // ⚠️ Personal Access Token (PAT) with repo contents:write permission.
 // For safety, keep this repo PRIVATE or use a backend instead of putting token in JS.
-const GITHUB_TOKEN = "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"; 
+const GITHUB_TOKEN = "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"; 
 
 // If token is empty, GitHub sync is disabled.
 const GITHUB_ENABLED = Boolean(
@@ -537,3 +537,4 @@ voiceLangSelect.addEventListener("change", () => {
 syncNowButton.addEventListener("click", () => {
   syncWordsToGitHub();
 });
+
