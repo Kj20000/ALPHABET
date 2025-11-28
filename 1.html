@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+<title>Kids Word Learning – Purple Theme</title>
+
+<style>
+/* ---------------- GLOBAL ---------------- */
+html, body {
+  margin: 0; padding: 0;
+  height: 100%; overflow: hidden;
+  font-family: Arial, sans-serif;
+
+  /* ✅ Reverted to your previous theme */
+  background: linear-gradient(135deg,#a86cf7,#ff6cab);
+}
+
+/* ---------------- LAYOUT ---------------- */
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1vh 2vw;
+}
+
+/* ---------------- TOP BAR ---------------- */
+.top-bar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-size: 3vh;
+  font-weight: bold;
+  color: white;
+}
+
+.settings-btn {
+  font-size: 3vh;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+/* ---------------- SETTINGS PANEL ---------------- */
+.settings-panel {
+  position: absolute;
+  top: 8vh; right: 2vw;
+  width: 80vw; max-width: 350px;
+  background: white;
+  border-radius: 20px;
+  padding: 2vh;
+  display: none;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
+
+.settings-panel button, 
+.settings-panel select {
+  width: 100%;
+  margin-top: 1vh;
+  padding: 1.5vh 1vw;
+  font-size: 2.2vh;
+  border-radius: 12px;
+  border: none;
+  background: #005be2;
+  color: white;
+}
+
+/* ---------------- IMAGE ---------------- */
+.image-box {
+  width: 30vh; height: 30vh;
+  background: white;
+  border-radius: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  box-shadow: 0 0 14px rgba(0,0,0,0.3);
+}
+
+.image-box img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+}
+
+/* ---------------- WORD AREA ---------------- */
+.word-row {
+  display: flex;
+  align-items: center;
+  gap: 3vw;
+}
+
+.word-box {
+  background: white;
+  font-size: 3.2vh;
+  padding: 1vh 2vw;
+  letter-spacing: 1vw;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  min-width: 50vw;
+  text-align: center;
+}
+
+.next-letter {
+  font-size: 4vh;
+  color: yellow;
+  font-weight: bold;
+  text-shadow: 0 0 10px black;
+}
+
+/* ---------------- KEYBOARD ---------------- */
+.keyboard {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1vh;
+  padding: 1vh;
+}
+
+.kbtn {
+  height: 6vh;
+  font-size: 2.5vh;
+  border: none;
+  background: white;
+  color: #0043a3;
+  font-weight: bold;
+  border-radius: 14px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.25);
+}
+
+/* ---------------- STAR ANIMATION ---------------- */
+.star {
+  position: absolute;
+  top: 40vh;
+  font-size: 12vh;
+  color: yellow;
+  display: none;
+  animation: pop 0.7s ease-out forwards;
+}
+
+@keyframes pop {
+  0% { transform: scale(0.1); opacity: 0; }
+  50% { transform: scale(1.5); opacity: 1; }
+  100% { transform: scale(0); opacity: 0; }
+}
+
+/* ---------------- RESPONSIVE ---------------- */
+@media (max-width: 600px) {
+  .image-box { width: 24vh; height: 24vh; }
+  .kbtn { height: 5.5vh; font-size: 2.2vh; }
+  .word-box { font-size: 2.6vh; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="title">What word is this?</div>
+    <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+  </div>
+
+  <!-- SETTINGS PANEL -->
+  <div id="settingsPanel" class="settings-panel">
+    <select id="lang" onchange="changeLanguage()">
+      <option value="english">English Voice</option>
+      <option value="hindi">Hindi Voice</option>
+    </select>
+
+    <select id="category" onchange="loadCategoryWords()">
+      <option value="all">All Categories</option>
+      <option value="animals">Animals</option>
+      <option value="fruits">Fruits</option>
+      <option value="vehicles">Vehicles</option>
+      <option value="objects">Objects</option>
+      <option value="custom">Custom Added</option>
+    </select>
+
+    <button onclick="addCustomWord()">Add Word (URL)</button>
+    <button onclick="uploadImage()">Upload Image (Offline)</button>
+  </div>
+
+  <!-- IMAGE -->
+  <div class="image-box">
+    <img id="wordImage" src="">
+  </div>
+
+  <!-- WORD AREA -->
+  <div class="word-row">
+    <div id="wordBox" class="word-box"></div>
+    <div id="nextLetter" class="next-letter"></div>
+  </div>
+
+  <div class="star" id="star">⭐</div>
+
+  <!-- KEYBOARD -->
+  <div id="keyboard" class="keyboard"></div>
+</div>
+
+<script>
+/******************************
+ * OFFLINE CARTOON SOUND BASE64
+ * (Shortened here – you can paste your actual Base64 sounds)
+ ******************************/
+const soundCorrect = new Audio("data:audio/mp3;base64,SUQzAwAAAAAAF1RTU0UAAAAPAAAACAAACwA...");
+const soundWrong   = new Audio("data:audio/mp3;base64,SUQzAwAAAAAAF1RTU0UAAAAPAAAACAAACwA...");
+
+/*********************************
+ * DEFAULT WORD LIST (10 words)
+ *********************************/
+let categories = {
+  animals: [
+    {word:"CAT", img:"https://i.imgur.com/8eO3r8N.png"},
+    {word:"DOG", img:"https://i.imgur.com/5vYbhzA.png"}
+  ],
+  fruits: [
+    {word:"APPLE", img:"https://i.imgur.com/VxdWc1i.png"},
+    {word:"MANGO", img:"https://i.imgur.com/y9fGg9j.png"}
+  ],
+  vehicles: [
+    {word:"CAR", img:"https://i.imgur.com/kYcN7Pe.png"},
+    {word:"BUS", img:"https://i.imgur.com/awQ4gvD.png"}
+  ],
+  objects: [
+    {word:"BOOK", img:"https://i.imgur.com/JWWG4SG.png"},
+    {word:"CLOCK", img:"https://i.imgur.com/nl5xcyF.png"}
+  ]
+};
+
+let allWords = [];
+Object.values(categories).forEach(c => allWords.push(...c));
+
+/******* CUSTOM WORDS *******/
+let customWords = JSON.parse(localStorage.getItem("customWords") || "[]");
+allWords = allWords.concat(customWords);
+
+let current = {};
+let typed = "";
+let voiceLang = "english";
+
+/*********************************
+ * LOAD RANDOM WORD
+ *********************************/
+function loadWord() {
+  let set = allWords;
+
+  let cat = document.getElementById("category").value;
+  if (cat !== "all") {
+    if (cat === "custom") set = customWords;
+    else set = categories[cat];
+  }
+  if (set.length === 0) set = allWords;
+
+  current = set[Math.floor(Math.random() * set.length)];
+  typed = "";
+
+  document.getElementById("wordImage").src = current.img;
+  document.getElementById("wordBox").innerText = "_ ".repeat(current.word.length);
+  document.getElementById("nextLetter").innerText = current.word[0];
+}
+loadWord();
+
+/*********************************
+ * KEYBOARD
+ *********************************/
+const keyboard = document.getElementById("keyboard");
+"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l => {
+  let btn = document.createElement("button");
+  btn.className = "kbtn";
+  btn.innerText = l;
+  btn.onclick = () => typeLetter(l);
+  keyboard.appendChild(btn);
+});
+
+/*********************************
+ * TYPE LETTER
+ *********************************/
+function typeLetter(l) {
+  const target = current.word;
+  const index = typed.length;
+
+  if (index >= target.length) return;
+
+  if (l !== target[index]) {
+    soundWrong.play();
+    return;
+  }
+
+  soundCorrect.play();
+  typed += l;
+
+  let out = "";
+  for (let i = 0; i < target.length; i++) {
+    out += (typed[i] ? typed[i] : "_") + " ";
+  }
+  document.getElementById("wordBox").innerText = out;
+
+  document.getElementById("nextLetter").innerText =
+    typed.length < target.length ? target[typed.length] : "";
+
+  if (typed === target) {
+    showStar();
+    speak("Correct " + current.word);
+    setTimeout(loadWord, 1200);
+  }
+}
+
+/*********************************
+ * STAR ANIMATION
+ *********************************/
+function showStar() {
+  const star = document.getElementById("star");
+  star.style.display = "block";
+  setTimeout(() => star.style.display = "none", 700);
+}
+
+/*********************************
+ * SPEECH
+ *********************************/
+function speak(t) {
+  let u = new SpeechSynthesisUtterance(t);
+  u.rate = 1;
+  u.lang = voiceLang === "hindi" ? "hi-IN" : "en-US";
+  speechSynthesis.speak(u);
+}
+
+function changeLanguage() {
+  voiceLang = document.getElementById("lang").value;
+}
+
+/*********************************
+ * SETTINGS PANEL
+ *********************************/
+function toggleSettings() {
+  let panel = document.getElementById("settingsPanel");
+  panel.style.display = panel.style.display === "block" ? "none" : "block";
+}
+
+function loadCategoryWords() {
+  loadWord();
+}
+
+/*********************************
+ * ADD CUSTOM WORD (URL)
+ *********************************/
+function addCustomWord() {
+  let w = prompt("Enter Word (CAPITAL):");
+  if (!w) return;
+
+  let img = prompt("Paste Image URL:");
+  if (!img) return;
+
+  let obj = {word:w.toUpperCase(), img:img};
+  saveCustom(obj);
+}
+
+/*********************************
+ * UPLOAD IMAGE (OFFLINE)
+ *********************************/
+function uploadImage() {
+  let input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+
+  input.onchange = e => {
+    let file = e.target.files[0];
+    let reader = new FileReader();
+    reader.onload = () => {
+      let w = prompt("Enter Word (CAPITAL):");
+      if (!w) return;
+      saveCustom({word:w.toUpperCase(), img:reader.result});
+    };
+    reader.readAsDataURL(file);
+  };
+
+  input.click();
+}
+
+/*********************************
+ * SAVE CUSTOM
+ *********************************/
+function saveCustom(obj) {
+  customWords.push(obj);
+  localStorage.setItem("customWords", JSON.stringify(customWords));
+  allWords.push(obj);
+  alert("Saved!");
+  loadWord();
+}
+</script>
+
+</body>
+</html>
