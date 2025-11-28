@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>What Word Is This?</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="top-bar">
+      <h1 class="title">What word is this?</h1>
+
+      <div class="top-controls">
+        <label class="language-select">
+          <span>Voice</span>
+          <select id="voiceLang">
+            <option value="EN">English</option>
+            <option value="HI">Hindi</option>
+          </select>
+        </label>
+
+        <button id="settingsButton" class="icon-button" aria-label="Settings">⚙️</button>
+      </div>
+    </header>
+
+    <main class="main-area">
+      <div class="image-wrapper">
+        <img id="wordImage" alt="Word image" />
+        <p id="noWordsMessage" class="info-text">
+          No words yet. Tap ⚙️ to add picture words.
+        </p>
+      </div>
+
+      <div class="answer-section">
+        <div id="answerSlots" class="answer-slots"></div>
+        <div id="hintLetter" class="hint-letter"></div>
+      </div>
+
+      <p id="message" class="message"></p>
+
+      <div class="sync-row">
+        <span id="syncStatus" class="sync-status">GitHub sync: off</span>
+        <button id="syncNowButton" class="tiny-button">Sync now</button>
+      </div>
+    </main>
+
+    <section id="keyboard" class="keyboard" aria-label="Letters keyboard">
+      <!-- Filled by JS -->
+    </section>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div id="settingsModal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <header class="modal-header">
+        <h2>Custom Words</h2>
+        <button id="closeSettings" class="icon-button" aria-label="Close">✖️</button>
+      </header>
+
+      <div class="modal-body">
+        <label class="field">
+          <span>Category (e.g. ANIMALS, FRUITS)</span>
+          <input type="text" id="categoryInput" placeholder="ANIMALS" />
+        </label>
+
+        <label class="field">
+          <span>WORD (CAPITAL LETTERS)</span>
+          <input type="text" id="wordInput" placeholder="LION" />
+        </label>
+
+        <label class="field">
+          <span>Image (File OR URL)</span>
+          <input type="file" id="imageInput" accept="image/*" />
+          <input type="url" id="imageURL" placeholder="https://example.com/image.jpg" />
+        </label>
+
+        <button id="addWordButton" class="primary-button">Save Word</button>
+
+        <hr />
+
+        <label class="field">
+          <span>Play from Category</span>
+          <select id="categoryFilter">
+            <option value="ALL">ALL</option>
+          </select>
+        </label>
+
+        <div id="wordList" class="word-list"></div>
+
+        <p class="tiny-note">
+          Words are also synced with GitHub (if configured) so they appear on all devices.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
